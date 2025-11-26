@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
 import api from '../../api/axios';
@@ -23,7 +24,7 @@ const UpdateStatusModal = ({ isOpen, onClose, complaint, onUpdate }) => {
             let statusInt = 1; // Pending
             if (status === 'In Progress') statusInt = 2;
             else if (status === 'Resolved') statusInt = 3;
-            else if (status === 'Returned') statusInt = 5; // Returned
+            else if (status === 'Returned') statusInt = 5;
 
             await api.put('/Complaint/update-status', {
                 complaintId: complaint.complaintId,
@@ -39,21 +40,21 @@ const UpdateStatusModal = ({ isOpen, onClose, complaint, onUpdate }) => {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <AnimatePresence>
             {isOpen && (
                 <>
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40" onClick={onClose} />
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
-                        <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl pointer-events-auto">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100]" onClick={onClose} />
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none">
+                        <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl pointer-events-auto flex flex-col max-h-[90vh]">
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <div>
                                     <h3 className="text-lg font-bold text-slate-800">Update Complaint #{complaint?.complaintId}</h3>
                                     <p className="text-sm text-slate-500">Take action on this grievance</p>
                                 </div>
-                                <button onClick={onClose}><X className="w-5 h-5 text-slate-400" /></button>
+                                <button onClick={onClose}><X className="w-5 h-5 text-slate-400 hover:text-slate-600" /></button>
                             </div>
-                            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
                                     <p className="text-sm text-slate-500 mb-1">Issue Reported:</p>
                                     <p className="font-medium text-slate-800">{complaint?.title}</p>
@@ -73,7 +74,7 @@ const UpdateStatusModal = ({ isOpen, onClose, complaint, onUpdate }) => {
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Manager Remarks</label>
                                     <textarea value={remarks} onChange={e => setRemarks(e.target.value)} rows="3" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="Add comments regarding the resolution..." />
                                 </div>
-                                <button disabled={isSubmitting} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+                                <button disabled={isSubmitting} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition flex items-center justify-center gap-2 disabled:opacity-70">
                                     {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                     {isSubmitting ? "Updating..." : "Update Status"}
                                 </button>
@@ -82,7 +83,8 @@ const UpdateStatusModal = ({ isOpen, onClose, complaint, onUpdate }) => {
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 

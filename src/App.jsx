@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+// import { NotificationProvider } from './context/NotificationContext'; // Assuming this exists from context, optional if removed
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-
+import MainLayout from './components/layout/MainLayout';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -26,24 +27,28 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
     return (
         <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    
-                    <Route 
-                        path="/dashboard" 
-                        element={
+            {/* Optional: <NotificationProvider> */}
+                <Router>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        
+                        {/* Protected Routes Wrapped in Main Layout */}
+                        <Route element={
                             <ProtectedRoute>
-                                <Dashboard />
+                                <MainLayout />
                             </ProtectedRoute>
-                        } 
-                    />
-                    
-                    {/* Default Redirect */}
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
-                    
-                </Routes>
-            </Router>
+                        }>
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            
+                            {/* Future routes can be added here easily */}
+                            {/* <Route path="/attendance" element={<Attendance />} /> */}
+                        </Route>
+                        
+                        {/* Default Redirect */}
+                        <Route path="/" element={<Navigate to="/dashboard" />} />
+                    </Routes>
+                </Router>
+            {/* </NotificationProvider> */}
         </AuthProvider>
     );
 };

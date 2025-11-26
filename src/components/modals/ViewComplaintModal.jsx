@@ -1,9 +1,10 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Building2, Clock, CheckCircle, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 
 const ViewComplaintModal = ({ isOpen, onClose, complaint }) => {
-    if (!complaint) return null;
+    if (!complaint && !isOpen) return null;
 
     const getStatusColor = (status) => {
         const normalized = status?.replace(/\s/g, '').toLowerCase();
@@ -27,22 +28,22 @@ const ViewComplaintModal = ({ isOpen, onClose, complaint }) => {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <AnimatePresence>
-            {isOpen && (
+            {isOpen && complaint && (
                 <>
                     <motion.div 
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }} 
-                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40" 
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100]" 
                         onClick={onClose} 
                     />
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95, y: 20 }} 
                         animate={{ opacity: 1, scale: 1, y: 0 }} 
                         exit={{ opacity: 0, scale: 0.95, y: 20 }} 
-                        className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none"
+                        className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none"
                     >
                         <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[90vh]">
                             {/* Header */}
@@ -133,7 +134,8 @@ const ViewComplaintModal = ({ isOpen, onClose, complaint }) => {
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 
